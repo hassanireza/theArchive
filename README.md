@@ -196,7 +196,7 @@ All configuration is read from environment variables, loaded from `.env` locally
 | `SECRET_KEY` | Yes | Django's cryptographic signing key. Generate a unique value per environment. |
 | `DEBUG` | No | `True` locally, `False` in production. Defaults to `False`. |
 | `ALLOWED_HOSTS` | Production | Comma separated list of hostnames allowed to serve the app. |
-| `DATABASE_URL` | Production | Full PostgreSQL connection string. Railway injects this automatically. |
+| `DATABASE_URL` | Production | Full PostgreSQL connection string. On Railway this is not linked automatically. Add it to the web service as `${{Postgres.DATABASE_URL}}`, referencing your Postgres service by name. |
 | `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT` | Local dev | Used only when `DATABASE_URL` is not set. |
 | `CSRF_TRUSTED_ORIGINS` | Production | Comma separated list of trusted origins, needed behind a custom domain. |
 
@@ -207,9 +207,18 @@ All configuration is read from environment variables, loaded from `.env` locally
 The Archive ships with everything Railway needs out of the box: a `requirements.txt` and a `railway.toml` that builds the app, collects static files, runs migrations right before each deploy, and then starts Gunicorn. There is no Procfile. Nixpacks reads a Procfile's `release` line during the Docker image build, before any database is attached, so migrations belong in `preDeployCommand` instead, which runs after the image is built and the database is reachable.
 
 1. **Create a new project** on [Railway](https://railway.app/new) and deploy from this GitHub repository.
-2. **Add a PostgreSQL database** to the project. Railway automatically injects `DATABASE_URL` into your service.
-3. **Set the required variables** on the service: at minimum `SECRET_KEY` and `DEBUG=False`. Railway also sets `RAILWAY_PUBLIC_DOMAIN`, which the app automatically trusts for `ALLOWED_HOSTS` and CSRF.
-4. **Deploy.** Railway runs `pip install -r requirements.txt` and `python manage.py collectstatic --noinput` during the build, then `python manage.py migrate --noinput` as the `preDeployCommand` right before starting Gunicorn.
+2. **Add a PostgreSQL database** to the project. Railway creates a `Postgres` service with its own `DATABASE_URL`, but does not attach it to your web service automatically.
+3. **Link the database to the web service** by adding a `DATABASE_URL` variable on the web service that references the Postgres service, rather than typing in a raw connection string:
+   ```
+   DATABASE_URL=${{Postgres.DATABASE_URL}}
+   ```
+   In the dashboard: open the web service, go to **Variables**, add `DATABASE_URL`, and pick the Postgres service's `DATABASE_URL` from the reference picker (or paste `${{Postgres.DATABASE_URL}}` directly, using the actual name of your Postgres service if you renamed it). From the CLI:
+   ```bash
+   railway variables --set 'DATABASE_URL=${{Postgres.DATABASE_URL}}'
+   ```
+   Without this, `settings.py` finds no `DATABASE_URL` and falls back to the local dev defaults (`127.0.0.1:5432`), which does not exist inside the Railway container and makes `preDeployCommand` fail with a connection error.
+4. **Set the remaining required variables** on the web service: at minimum `SECRET_KEY` and `DEBUG=False`. Railway also sets `RAILWAY_PUBLIC_DOMAIN`, which the app automatically trusts for `ALLOWED_HOSTS` and CSRF.
+5. **Deploy.** Railway runs `pip install -r requirements.txt` and `python manage.py collectstatic --noinput` during the build, then `python manage.py migrate --noinput` as the `preDeployCommand` right before starting Gunicorn.
 5. **Create a superuser** from the Railway shell:
    ```bash
    railway run python manage.py createsuperuser
