@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path("", views.index, name="index"),
+    path("health/", views.health, name="health"),
 
     path("api/tasks/", views.get_tasks),
     path("api/tasks/create/", views.create_task),
