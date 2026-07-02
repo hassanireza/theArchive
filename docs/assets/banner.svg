@@ -1,0 +1,55 @@
+<svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The Archive banner">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f5f0e8"/>
+      <stop offset="100%" stop-color="#ede7d9"/>
+    </linearGradient>
+    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#c8702a"/>
+      <stop offset="100%" stop-color="#d4a85a"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="300" fill="url(#bg)"/>
+
+  <g opacity="0.16" stroke="#c8702a" stroke-width="0.8">
+    <line x1="0" y1="60" x2="1200" y2="60"/>
+    <line x1="0" y1="150" x2="1200" y2="150"/>
+    <line x1="0" y1="240" x2="1200" y2="240"/>
+    <line x1="150" y1="0" x2="150" y2="300"/>
+    <line x1="1050" y1="0" x2="1050" y2="300"/>
+  </g>
+
+  <g opacity="0.35">
+    <circle cx="1030" cy="150" r="120" stroke="#c8702a" stroke-width="0.8" fill="none"/>
+    <circle cx="1030" cy="150" r="88" stroke="#d4a85a" stroke-width="0.6" fill="none"/>
+    <circle cx="1030" cy="150" r="56" stroke="#c8702a" stroke-width="0.5" fill="none"/>
+  </g>
+
+  <g transform="translate(90,104)">
+    <rect x="0" y="0" width="92" height="92" rx="20" fill="url(#mark)"/>
+    <path d="M20 26h52M20 46h52M20 66h34" stroke="#f5f0e8" stroke-width="6" stroke-linecap="round"/>
+  </g>
+
+  <text x="210" y="150" font-family="Georgia, 'Playfair Display', serif" font-size="58" fill="#1a120a" font-weight="700">
+    The Archive
+  </text>
+  <text x="212" y="188" font-family="Verdana, 'DM Sans', sans-serif" font-size="19" fill="#4a3828">
+    A warm, editorial Kanban board built on Django
+  </text>
+
+  <g font-family="'DM Mono', monospace" font-size="12" letter-spacing="2" fill="#8a7060">
+    <text x="212" y="222">DJANGO</text>
+    <text x="312" y="222">POSTGRESQL</text>
+    <text x="450" y="222">RAILWAY READY</text>
+  </g>
+
+  <g transform="translate(210,240)" opacity="0.9">
+    <circle cx="6" cy="0" r="4" fill="#b8a898"/>
+    <circle cx="106" cy="0" r="4" fill="#d4a85a"/>
+    <circle cx="242" cy="0" r="4" fill="#c8702a"/>
+    <text x="18" y="4" font-family="'DM Mono', monospace" font-size="11" fill="#8a7060">TO DO</text>
+    <text x="118" y="4" font-family="'DM Mono', monospace" font-size="11" fill="#8a7060">IN PROGRESS</text>
+    <text x="254" y="4" font-family="'DM Mono', monospace" font-size="11" fill="#8a7060">DONE</text>
+  </g>
+</svg>
