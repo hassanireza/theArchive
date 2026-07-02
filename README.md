@@ -120,7 +120,7 @@ stateDiagram-v2
 | Typography | Playfair Display, DM Sans, DM Mono |
 | Animation | FLIP technique with a hand-written spring physics engine |
 | Auth | Django's built-in session authentication |
-| Deployment | Railway, via Nixpacks, a Procfile, and `railway.toml` |
+| Deployment | Railway, via Nixpacks and `railway.toml` |
 
 <br/>
 
@@ -147,8 +147,7 @@ collaboration_app/
 ├── docs/assets/                   # README diagrams and illustrations
 ├── .env.example
 ├── manage.py
-├── Procfile                       # Railway release and web processes
-├── railway.toml                   # Build and deploy configuration
+├── railway.toml                   # Build, pre-deploy migrations, and start command
 └── requirements.txt
 ```
 
@@ -205,12 +204,12 @@ All configuration is read from environment variables, loaded from `.env` locally
 
 ## Deploying to Railway
 
-The Archive ships with everything Railway needs out of the box: a `requirements.txt`, a `Procfile`, and a `railway.toml` that runs migrations before each deploy and serves the app with Gunicorn.
+The Archive ships with everything Railway needs out of the box: a `requirements.txt` and a `railway.toml` that builds the app, collects static files, runs migrations right before each deploy, and then starts Gunicorn. There is no Procfile. Nixpacks reads a Procfile's `release` line during the Docker image build, before any database is attached, so migrations belong in `preDeployCommand` instead, which runs after the image is built and the database is reachable.
 
 1. **Create a new project** on [Railway](https://railway.app/new) and deploy from this GitHub repository.
 2. **Add a PostgreSQL database** to the project. Railway automatically injects `DATABASE_URL` into your service.
 3. **Set the required variables** on the service: at minimum `SECRET_KEY` and `DEBUG=False`. Railway also sets `RAILWAY_PUBLIC_DOMAIN`, which the app automatically trusts for `ALLOWED_HOSTS` and CSRF.
-4. **Deploy.** Railway runs `pip install -r requirements.txt` and `python manage.py collectstatic --noinput` during the build, then `python manage.py migrate --noinput` before starting Gunicorn.
+4. **Deploy.** Railway runs `pip install -r requirements.txt` and `python manage.py collectstatic --noinput` during the build, then `python manage.py migrate --noinput` as the `preDeployCommand` right before starting Gunicorn.
 5. **Create a superuser** from the Railway shell:
    ```bash
    railway run python manage.py createsuperuser
